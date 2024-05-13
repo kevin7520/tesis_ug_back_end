@@ -16,9 +16,7 @@ class auth extends Conexion{
             //todo esta bien 
             $usuario = $datos['usuario'];
             $password = $datos['password'];parent::desencriptar($datos['password']);
-            print_r($password); 
             $password = parent::desencriptar($password);
-            print_r($password); 
             $datos = $this->obtenerDatosUsuario($usuario);
             if($datos){
             //     //verificar si la contraseña es igual
@@ -28,10 +26,10 @@ class auth extends Conexion{
             //                     $verificar  = $this->insertarToken($datos[0]['UsuarioId']);
             //                     if($verificar){
             //                             // si se guardo
-                                        print_r($password); 
                                          $result = $_respustas->response;
                                          $result["result"] = array(
-                                             "usuario" => $password
+                                             "usuario" => $usuario,
+                                             "idUsuario" => $datos[0]['idUsuario']
                                          );
                                          return $result;
             //                     }else{
@@ -47,16 +45,15 @@ class auth extends Conexion{
             //             return $_respustas->error_200("El password es invalido");
             //         }
             }else{
-                 //no existe el usuario
-                return $_respustas->error_200("El usuaro $usuario no existe ");
+                return $_respustas->error_200("usuario_incorrecto");
             }
         }
     }
 
 
 
-    private function obtenerDatosUsuario($correo){
-        $query = "SELECT idUsuario,password,estado FROM usuarios";
+    private function obtenerDatosUsuario($usuario){
+        $query = "SELECT idUsuario,password,estado FROM usuarios WHERE usuario = '$usuario'";
         $datos = parent::obtenerDatos($query);
         if(isset($datos[0]["idUsuario"])){
             return $datos;
