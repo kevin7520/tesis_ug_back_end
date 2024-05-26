@@ -61,6 +61,43 @@
             return $this->convertirUTF8($resultArray);
         }
 
+        public function obtenerDatosLogin($sqlstr, $parametros){
+            $stmt = $this->conexion->prepare($sqlstr);
+            $tipos = '';
+            $valores = [];
+            foreach ($parametros as $valor) {
+                if (is_int($valor)) {
+                $tipos .= 'i'; 
+                } elseif (is_float($valor)) {
+                $tipos .= 'd'; 
+                } elseif (is_string($valor)) {
+                $tipos .= 's'; 
+                } else {
+                $tipos .= 'b'; 
+                }
+                $valores[] = $valor;
+            }
+            
+            if (!empty($parametros)) {
+                $stmt->bind_param($tipos, ...$valores);
+            }
+                
+            $stmt->execute();
+            
+            $stmt->bind_result($p_idUsuario, $p_mensaje);
+                                    
+            $resultArray = [];
+            while ($stmt->fetch()) {
+                $fila = [
+                    'idUsuario' => $p_idUsuario,
+                    'mensaje' => $p_mensaje
+                ];
+                $resultArray[] = $fila;
+            }
+                                    
+            return $this->convertirUTF8($resultArray);
+        }
+
         public function nonQuery($sqlstr){
             $results = $this->conexion->query($sqlstr);
             return $this->conexion->affected_rows;

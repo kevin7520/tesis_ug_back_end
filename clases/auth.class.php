@@ -13,15 +13,15 @@ class auth extends Conexion{
             return $_respustas->error_400();
         }else{
             $usuario = $datos['usuario'];
-            $password = $datos['password'];parent::desencriptar($datos['password']);
-            $password = parent::desencriptar($password);
-            $datos = $this->obtenerDatosUsuario($usuario);
+            $password = $datos['password'];
+            $password = parent::encriptar($password);
+            $datos = $this->obtenerDatosUsuario($usuario, $password);
             if($datos){
             //     //verificar si la contraseña es igual
             //         if($password == $datos[0]['Password']){
             //                 if($datos[0]['Estado'] == "Activo"){
             //                     //crear el token
-            //                     $verificar  = $this->insertarToken($datos[0]['UsuarioId']);
+                                 //$verificar  = $this->insertarToken($datos[0]['UsuarioId']);
             //                     if($verificar){
             //                             // si se guardo
                                          $result = $_respustas->response;
@@ -42,7 +42,8 @@ class auth extends Conexion{
             //             //la contraseña no es igual
             //             return $_respustas->error_200("El password es invalido");
             //         }
-            }else{
+            }
+            else{
                 return $_respustas->error_200("usuario_incorrecto");
             }
         }
@@ -57,6 +58,7 @@ class auth extends Conexion{
         else {
             $usuario = $datos['usuario'];
             $password = $datos['password'];
+            $password = parent::encriptar($password);
             $correo = $datos['password'];
             $datos = $this->crearCuenta($usuario,$correo,$password);
             if($datos){
@@ -74,10 +76,15 @@ class auth extends Conexion{
 
 
 
-    private function obtenerDatosUsuario($usuario){
-        $query = "SELECT idUsuario,password,estado FROM usuarios WHERE usuario = '$usuario'";
-        $datos = parent::obtenerDatos($query);
-        if(isset($datos[0]["idUsuario"])){
+    private function obtenerDatosUsuario($usuario, $password){
+        $consulta = "CALL LOGIN(?, ?, @p_idUsuario, @p_mensaje)";
+        //$parametros = [$usuario,$password];
+        $parametros = [
+            ':p_usuario' => $usuario,
+            ':p_password' => $password
+        ];
+        $datos = parent::obtenerDatosLogin($consulta,$parametros);
+        if($datos[0]["idUsuario"] != 0){
             return $datos;
         }else{
             return 0;
