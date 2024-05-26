@@ -10,10 +10,8 @@ class auth extends Conexion{
         $_respustas = new RespuestaGenerica;
         $datos = json_decode($json,true);
         if(!isset($datos['usuario']) || !isset($datos["password"])){
-            //error con los campos
             return $_respustas->error_400();
         }else{
-            //todo esta bien 
             $usuario = $datos['usuario'];
             $password = $datos['password'];parent::desencriptar($datos['password']);
             $password = parent::desencriptar($password);
@@ -50,6 +48,30 @@ class auth extends Conexion{
         }
     }
 
+    public function CreacionUsuario($json) {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        if(!isset($datos['usuario']) || !isset($datos["password"]) || !isset($datos["correo"])){
+            return $_respustas->error_400();
+        }
+        else {
+            $usuario = $datos['usuario'];
+            $password = $datos['password'];
+            $correo = $datos['password'];
+            $datos = $this->crearCuenta($usuario,$correo,$password);
+            if($datos){
+                $result = $_respustas->response;
+                $result["result"] = array(
+                    "usuario" => $usuario
+                );
+                return $result;
+            }
+            else {
+                return $_respustas->error_200("La creación de la cuenta no fue exitosa. Por favor, inténtelo nuevamente más tarde.");
+            }
+        }
+    }
+
 
 
     private function obtenerDatosUsuario($usuario){
@@ -60,6 +82,11 @@ class auth extends Conexion{
         }else{
             return 0;
         }
+    }
+
+    private function crearCuenta($usuario, $correo, $password) {
+        $query = "INSERT INTO usuarios (usuario,correo,password) VALUES ('$usuario', '$correo', '$password')";
+        return parent::nonQuery($query);
     }
 
 
