@@ -19,7 +19,8 @@ class home extends Conexion{
         
                 $result = $_respustas->response;
                 $result["result"] = array(
-                    "registro" => $datos
+                    "registro" => $datos["registroLogin"],
+                    "rol" => $datos["rol"]
                 );
                 return $result;
             }
@@ -30,10 +31,10 @@ class home extends Conexion{
     }
 
     private function obtenerUsuarioRegistro($id_usuario, $usuario) {
-        $query = "SELECT registroLogin FROM usuarios WHERE idUsuario = '$id_usuario' AND usuario = '$usuario'";
+        $query = "SELECT registroLogin, rol FROM usuarios WHERE idUsuario = '$id_usuario' AND usuario = '$usuario'";
         $datos = parent::obtenerDatos($query);
         if(isset($datos[0]["registroLogin"])){
-            return $datos[0]["registroLogin"];
+            return $datos[0];
         } else {
             return 0;
         }

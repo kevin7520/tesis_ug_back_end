@@ -27,7 +27,8 @@ class auth extends Conexion{
                                          $result = $_respustas->response;
                                          $result["result"] = array(
                                              "usuario" => $usuario,
-                                             "idUsuario" => $datos[0]['idUsuario']
+                                             "idUsuario" => $datos[0]['idUsuario'],
+                                             "migrado" => $datos[0]['mensaje']
                                          );
                                          return $result;
             //                     }else{
@@ -74,11 +75,37 @@ class auth extends Conexion{
         }
     }
 
+    public function migracionUsuario($json) {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        if(!isset($datos['usuario']) || !isset($datos['nombre']) || !isset($datos["apellido"]) || !isset($datos["rol"]) || !isset($datos["fechaNacimiento"]) || !isset($datos["id"])){
+            return $_respustas->error_400();
+        }
+        else {
+            $nombre = $datos['nombre'];
+            $apellido = $datos['apellido'];
+            $rol = $datos['rol'];
+            $fechaNacimiento = $datos['fechaNacimiento'];
+            $id = $datos['id'];
+            $usuario = $datos['usuario'];
+            $datos = $this->migracionCuenta($nombre,$apellido,$rol,$fechaNacimiento,$id,$usuario);
+            if($datos){
+                $result = $_respustas->response;
+                $result["result"] = array(
+                    "proceso" => 'OK'
+                );
+                return $result;
+            }
+            else {
+                return $_respustas->error_200("La migración no fue exitosa. Por favor, inténtelo nuevamente más tarde.");
+            }
+        }
+    }
+
 
 
     private function obtenerDatosUsuario($usuario, $password){
         $consulta = "CALL LOGIN(?, ?, @p_idUsuario, @p_mensaje)";
-        //$parametros = [$usuario,$password];
         $parametros = [
             ':p_usuario' => $usuario,
             ':p_password' => $password
@@ -93,6 +120,11 @@ class auth extends Conexion{
 
     private function crearCuenta($usuario, $correo, $password) {
         $query = "INSERT INTO usuarios (usuario,correo,password) VALUES ('$usuario', '$correo', '$password')";
+        return parent::nonQuery($query);
+    }
+
+    private function migracionCuenta($nombre, $apellido, $rol, $fechaNacimiento, $id, $usuario) {
+        $query = "UPDATE usuarios set nombres = '$nombre', apellidos = '$apellido', rol = '$rol', fechaNacimiento = '$fechaNacimiento', alias = '$usuario' where idUsuario = $id";
         return parent::nonQuery($query);
     }
 
