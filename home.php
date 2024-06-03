@@ -32,6 +32,9 @@
                 case 'crearJuego':
                     $datosArray = $_auth->postCreateJuego($postBody);
                     break;
+                case 'obtenerJuego':
+                    $datosArray = $_auth->getJuego($postBody);
+                    break;
                 default:
                     $datosArray = $_respuestas->error_405();
                     break;

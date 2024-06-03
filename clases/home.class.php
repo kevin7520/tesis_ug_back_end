@@ -30,6 +30,31 @@ class home extends Conexion{
         }
     }
 
+    public function getJuego($json){
+      
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        if(!isset($datos['id'])){
+            return $_respustas->error_400();
+        }else{
+            $id = $datos['id'];
+            $datos = $this->obtenerJuego($id);
+            if($datos){
+        
+                $result = $_respustas->response;
+                $result["result"] = array(
+                    "fecha_creacion" => $datos["fecha_creacion"],
+                    "fecha_finalizacion" => $datos["fecha_finalizacion"],
+                    "json" => $datos["json"],
+                );
+                return $result;
+            }
+            else{
+                return $_respustas->error_200("not_game");
+            }
+        }
+    }
+
     public function postCreateJuego($json){
         $_respustas = new RespuestaGenerica;
         $datos = json_decode($json,true);
@@ -69,6 +94,16 @@ class home extends Conexion{
     private function crearJuego($id_usuario,$fecha_creacion,$fecha_finalizacion,$json){
         $query = "INSERT INTO juegos (id_profesor,fecha_creacion,fecha_finalizacion,json) VALUES ('$id_usuario', '$fecha_creacion', '$fecha_finalizacion','$json')";
         return parent::nonQueryId($query);
+    }
+
+    private function obtenerJuego($id_juego) {
+        $query = "SELECT *FROM juegos WHERE id_juego = '$id_juego'";
+        $datos = parent::obtenerDatos($query);
+        if(isset($datos[0])){
+            return $datos[0];
+        } else {
+            return 0;
+        }
     }
 
 }
