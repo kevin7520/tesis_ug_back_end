@@ -1,0 +1,16 @@
+
+use tesis; 
+--- Primero ejecuta esto
+CREATE TABLE `tesis`.`juegos` (
+  `id_juego` INT NOT NULL AUTO_INCREMENT,
+  `id_profesor` INT NOT NULL,
+  `fecha_creacion` DATETIME NOT NULL,
+  `fecha_finalizacion` DATETIME NOT NULL,
+  `estado` TINYINT NOT NULL DEFAULT 1,
+  `json` JSON NOT NULL,
+  PRIMARY KEY (`id_juego`));
+
+--- Segundo ejecuta esto
+use tesis; 
+ALTER TABLE juegos AUTO_INCREMENT = 1001;
+

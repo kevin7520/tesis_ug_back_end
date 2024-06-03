@@ -7,10 +7,36 @@
 
     if($_SERVER['REQUEST_METHOD'] == "POST"){
 
+        // $postBody = file_get_contents("php://input");
+
+        // $datosArray = $_auth->getUsuario($postBody);
+
+        // header('Content-Type: application/json');
+        // if($datosArray["code"] != "200"){
+        //     $responseCode = $datosArray["code"];
+        //     http_response_code($responseCode);
+        // }
+        // else{
+        //     http_response_code(200);
+        // }
+        // echo json_encode($datosArray);
         $postBody = file_get_contents("php://input");
+        $datosArray = [];
+        $requestData = json_decode($postBody, true);
 
-        $datosArray = $_auth->getUsuario($postBody);
-
+        if(isset($requestData['action'])) {
+            switch($requestData['action']) {
+                case 'getUsuarios':
+                    $datosArray = $_auth->getUsuario($postBody);
+                    break;
+                case 'crearJuego':
+                    $datosArray = $_auth->postCreateJuego($postBody);
+                    break;
+                default:
+                    $datosArray = $_respuestas->error_405();
+                    break;
+            }
+        }
         header('Content-Type: application/json');
         if($datosArray["code"] != "200"){
             $responseCode = $datosArray["code"];

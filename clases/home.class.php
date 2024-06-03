@@ -30,6 +30,32 @@ class home extends Conexion{
         }
     }
 
+    public function postCreateJuego($json){
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        if(!isset($datos['id_profesor']) || !isset($datos["fechaCreacion"]) || !isset($datos["fechaFinilizacion"]) || !isset($datos["json"])){
+            return $_respustas->error_400();
+        }
+        else {
+            $usuario = $datos['id_profesor'];
+            $fecha_creacion = $datos['fechaCreacion'];
+            $fecha_finalizacion = $datos['fechaFinilizacion'];
+            $json_data = $datos['json'];
+            
+            $datos = $this->crearJuego($usuario,$fecha_creacion,$fecha_finalizacion,$json_data);
+            if($datos){
+                $result = $_respustas->response;
+                $result["result"] = array(
+                    "id_juego" => $datos
+                );
+                return $result;
+            }
+            else {
+                return $_respustas->error_200("La creación del juego no fue exitosa. Por favor, inténtelo nuevamente más tarde.");
+            }
+        }
+    }
+
     private function obtenerUsuarioRegistro($id_usuario, $usuario) {
         $query = "SELECT registroLogin, rol FROM usuarios WHERE idUsuario = '$id_usuario' AND usuario = '$usuario'";
         $datos = parent::obtenerDatos($query);
@@ -40,21 +66,10 @@ class home extends Conexion{
         }
     }
 
-
-    // private function insertarToken($usuarioid){
-    //     $val = true;
-    //     $token = bin2hex(openssl_random_pseudo_bytes(16,$val));
-    //     $date = date("Y-m-d H:i");
-    //     $estado = "Activo";
-    //     $query = "INSERT INTO usuarios_token (UsuarioId,Token,Estado,Fecha)VALUES('$usuarioid','$token','$estado','$date')";
-    //     $verifica = parent::nonQuery($query);
-    //     if($verifica){
-    //         return $token;
-    //     }else{
-    //         return 0;
-    //     }
-    // }
-
+    private function crearJuego($id_usuario,$fecha_creacion,$fecha_finalizacion,$json){
+        $query = "INSERT INTO juegos (id_profesor,fecha_creacion,fecha_finalizacion,json) VALUES ('$id_usuario', '$fecha_creacion', '$fecha_finalizacion','$json')";
+        return parent::nonQueryId($query);
+    }
 
 }
 
