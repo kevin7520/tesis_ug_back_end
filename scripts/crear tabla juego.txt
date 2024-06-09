@@ -14,3 +14,8 @@ CREATE TABLE `tesis`.`juegos` (
 use tesis; 
 ALTER TABLE juegos AUTO_INCREMENT = 1001;
 
+--- Terceo ejecuta esto
+
+alter table juegos
+  add juego_publico varchar(1);
+

@@ -55,10 +55,24 @@ class home extends Conexion{
         }
     }
 
+    public function getJuegosPublicos($json) {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        $datos = $this->obtenerJuegoPublicos();
+        if($datos){
+            $result = $_respustas->response;
+            $result["result"] = $datos;
+            return $result;
+        }
+        else{
+            return $_respustas->error_200("not_game");
+        }
+    }
+
     public function postCreateJuego($json){
         $_respustas = new RespuestaGenerica;
         $datos = json_decode($json,true);
-        if(!isset($datos['id_profesor']) || !isset($datos["fechaCreacion"]) || !isset($datos["fechaFinilizacion"]) || !isset($datos["json"])){
+        if(!isset($datos['id_profesor']) || !isset($datos["fechaCreacion"]) || !isset($datos["fechaFinilizacion"]) || !isset($datos["json"]) || !isset($datos["privacidad"])){
             return $_respustas->error_400();
         }
         else {
@@ -66,8 +80,9 @@ class home extends Conexion{
             $fecha_creacion = $datos['fechaCreacion'];
             $fecha_finalizacion = $datos['fechaFinilizacion'];
             $json_data = $datos['json'];
+            $privacidad = $datos['privacidad'];
             
-            $datos = $this->crearJuego($usuario,$fecha_creacion,$fecha_finalizacion,$json_data);
+            $datos = $this->crearJuego($usuario,$fecha_creacion,$fecha_finalizacion,$json_data,$privacidad);
             if($datos){
                 $result = $_respustas->response;
                 $result["result"] = array(
@@ -91,8 +106,8 @@ class home extends Conexion{
         }
     }
 
-    private function crearJuego($id_usuario,$fecha_creacion,$fecha_finalizacion,$json){
-        $query = "INSERT INTO juegos (id_profesor,fecha_creacion,fecha_finalizacion,json) VALUES ('$id_usuario', '$fecha_creacion', '$fecha_finalizacion','$json')";
+    private function crearJuego($id_usuario,$fecha_creacion,$fecha_finalizacion,$json,$privacidad){
+        $query = "INSERT INTO juegos (id_profesor,fecha_creacion,fecha_finalizacion,json,juego_publico) VALUES ('$id_usuario', '$fecha_creacion', '$fecha_finalizacion','$json','$privacidad')";
         return parent::nonQueryId($query);
     }
 
@@ -101,6 +116,16 @@ class home extends Conexion{
         $datos = parent::obtenerDatos($query);
         if(isset($datos[0])){
             return $datos[0];
+        } else {
+            return 0;
+        }
+    }
+
+    private function obtenerJuegoPublicos() {
+        $query = "SELECT *FROM juegos WHERE juego_publico = 'S'";
+        $datos = parent::obtenerDatos($query);
+        if(isset($datos[0])){
+            return $datos;
         } else {
             return 0;
         }

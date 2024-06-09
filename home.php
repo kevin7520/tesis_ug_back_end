@@ -35,6 +35,9 @@
                 case 'obtenerJuego':
                     $datosArray = $_auth->getJuego($postBody);
                     break;
+                case 'obtenerJuegoPublicos':
+                    $datosArray = $_auth->getJuegosPublicos($postBody);
+                    break;
                 default:
                     $datosArray = $_respuestas->error_405();
                     break;
