@@ -1,0 +1,69 @@
+--Primero
+CREATE TABLE `tesis`.`tipo_requerimiento` (
+  `id_tipo_requerimiento` INT NOT NULL AUTO_INCREMENT,
+  `nombre_tipo` VARCHAR(45) NOT NULL,
+  `codigo` VARCHAR(3) NOT NULL,
+  PRIMARY KEY (`id_tipo_requerimiento`));
+
+  ---Segundo
+
+  INSERT INTO `tesis`.`tipo_requerimiento`
+(`nombre_tipo`, `codigo`)
+VALUES
+("No Funcional Ambiguo", "NFA");
+
+INSERT INTO `tesis`.`tipo_requerimiento`
+(`nombre_tipo`, `codigo`)
+VALUES
+("No Funcional no Ambiguo", "NFN");
+
+INSERT INTO `tesis`.`tipo_requerimiento`
+(`nombre_tipo`, `codigo`)
+VALUES
+("Funcional Ambiguo", "FA");
+
+INSERT INTO `tesis`.`tipo_requerimiento`
+(`nombre_tipo`, `codigo`)
+VALUES
+("Funcional no Ambiguo", "FN");
+
+INSERT INTO `tesis`.`tipo_requerimiento`
+(`nombre_tipo`, `codigo`)
+VALUES
+("Funcional", "RF");
+
+INSERT INTO `tesis`.`tipo_requerimiento`
+(`nombre_tipo`, `codigo`)
+VALUES
+("No Funcional", "RNF");
+
+
+---Tercero
+
+CREATE TABLE `tesis`.`requerimientos` (
+  `id_requerimientos` INT NOT NULL AUTO_INCREMENT,
+  `titulo` VARCHAR(45) NOT NULL,
+  `retroalimentacion` VARCHAR(500) NULL,
+  `estado` VARCHAR(1) NULL DEFAULT 'A',
+  `tipo_requerimiento` INT NULL,
+  PRIMARY KEY (`id_requerimientos`),
+  INDEX `pk_id_requerimiento_idx` (`tipo_requerimiento` ASC),
+  CONSTRAINT `fk_id_requerimiento`
+    FOREIGN KEY (`tipo_requerimiento`)
+    REFERENCES `tesis`.`tipo_requerimiento` (`id_tipo_requerimiento`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);
+
+---Cuarto
+
+  INSERT INTO `tesis`.`requerimientos`
+(`titulo`,
+`retroalimentacion`,
+`tipo_requerimiento`)
+VALUES
+('Ejemplo Titulo',
+'Ejemplo Retro Alimentacion',
+1); 
+
+///El uno  representa el Id del requerimiento de la tabla que creamos para ver el tipo de requerimiento
