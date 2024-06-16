@@ -69,6 +69,19 @@ class home extends Conexion{
         }
     }
 
+    public function getRequerimientos(){ 
+        $_respustas = new RespuestaGenerica;
+        $datos = $this->obtenerRequerimientos();
+        if($datos){
+            $result = $_respustas->response;
+            $result["result"] = $datos;
+            return $result;
+        }
+        else{
+            return $_respustas->error_200("not_requerimientos");
+        }
+    }
+
     public function postCreateJuego($json){
         $_respustas = new RespuestaGenerica;
         $datos = json_decode($json,true);
@@ -93,6 +106,20 @@ class home extends Conexion{
             else {
                 return $_respustas->error_200("La creación del juego no fue exitosa. Por favor, inténtelo nuevamente más tarde.");
             }
+        }
+    }
+
+    public function postRequerimientos($json) {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        $datos = $this->guardarRequerimientos($datos['requisitos']);
+        if(isset($datos[0])){
+            $result = $_respustas->response;
+            $result["result"] = $datos;
+            return $result;
+        } 
+        else {
+            return $_respustas->error_200("error_guardarTodos");
         }
     }
 
@@ -123,6 +150,16 @@ class home extends Conexion{
 
     private function obtenerJuegoPublicos() {
         $query = "SELECT *FROM juegos WHERE juego_publico = 'S'";
+        $datos = parent::obtenerDatos($query);
+        if(isset($datos[0])){
+            return $datos;
+        } else {
+            return 0;
+        }
+    }
+
+    private function obtenerRequerimientos() {
+        $query = "SELECT *FROM requerimientos WHERE estado = 'A'";
         $datos = parent::obtenerDatos($query);
         if(isset($datos[0])){
             return $datos;

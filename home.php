@@ -38,6 +38,12 @@
                 case 'obtenerJuegoPublicos':
                     $datosArray = $_auth->getJuegosPublicos($postBody);
                     break;
+                case 'guardarRequerimientos':
+                    $datosArray = $_auth->postRequerimientos($postBody);
+                    break;
+                case 'obtenerRequerimientos':
+                    $datosArray = $_auth->getRequerimientos();
+                    break;
                 default:
                     $datosArray = $_respuestas->error_405();
                     break;

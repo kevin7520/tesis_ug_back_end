@@ -25,9 +25,6 @@
                 echo "algo va mal con la conexion";
                 die();
             }
-            // else {
-            //     echo "Belleza mayonesa";
-            // }
         }
         private function datosConexion() {
             $dirreccion = dirname(__FILE__);
@@ -36,19 +33,11 @@
         }
 
         private function convertirUTF8($array){
-            // Comentar la impresión del array original
-            // print_r($array);
-            
-            // Recorrer el array y convertir los elementos a UTF-8 si es necesario
             array_walk_recursive($array, function (&$item, $key) {
-                // Verificar si el elemento es una cadena y no está en UTF-8
                 if (is_string($item) && !mb_check_encoding($item, 'UTF-8')) {
-                    // Convertir el elemento a UTF-8
                     $item = utf8_encode($item);
                 }
             });
-            
-            // Imprimir el array después de la conversión (opcional)
             return $array;
         }
 
@@ -95,6 +84,35 @@
                 $resultArray[] = $fila;
             }
                                     
+            return $this->convertirUTF8($resultArray);
+        }
+
+        public function guardarRequerimientos($data) {
+
+            $stmt = $this->conexion->prepare("INSERT INTO requerimientos (titulo, retroalimentacion, tipo_requerimiento) VALUES (?, ?, ?)");
+            
+            $stmt->bind_param("ssi", $requerimiento, $retroalimentacion, $idTipo);
+            $resultArray = [];
+        
+            foreach ($data as $item) {
+                $requerimiento = $item['requerimiento'];
+                $retroalimentacion = $item['retroalimentacion'];
+                $idTipo = $item['idTipo'];
+                
+                if (!$stmt->execute()) {
+                    $fila = [
+                        'error' => true,
+                        'mensaje' => $requerimiento
+                    ];
+                } else {
+                    $fila = [
+                        'error' => false,
+                        'mensaje' => $requerimiento
+                    ];
+                }
+                $resultArray[] = $fila;
+            }
+        
             return $this->convertirUTF8($resultArray);
         }
 
