@@ -87,6 +87,43 @@
             return $this->convertirUTF8($resultArray);
         }
 
+        public function obtenerDatosRegistroPuntaje($sqlstr, $parametros){
+            $stmt = $this->conexion->prepare($sqlstr);
+            $tipos = '';
+            $valores = [];
+            foreach ($parametros as $valor) {
+                if (is_int($valor)) {
+                $tipos .= 'i'; 
+                } elseif (is_float($valor)) {
+                $tipos .= 'd'; 
+                } elseif (is_string($valor)) {
+                $tipos .= 's'; 
+                } else {
+                $tipos .= 'b'; 
+                }
+                $valores[] = $valor;
+            }
+            
+            if (!empty($parametros)) {
+                $stmt->bind_param($tipos, ...$valores);
+            }
+                
+            $stmt->execute();
+            
+            $stmt->bind_result($p_mensaje);
+                                    
+            $resultArray = [];
+            while ($stmt->fetch()) {
+                $fila = [
+                    'mensaje' => $p_mensaje
+                ];
+                $resultArray[] = $fila;
+            }
+                                    
+            return $this->convertirUTF8($resultArray);
+        }
+
+
         public function guardarRequerimientos($data) {
 
             $stmt = $this->conexion->prepare("INSERT INTO requerimientos (titulo, retroalimentacion, tipo_requerimiento) VALUES (?, ?, ?)");

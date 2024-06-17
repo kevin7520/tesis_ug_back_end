@@ -44,6 +44,9 @@
                 case 'obtenerRequerimientos':
                     $datosArray = $_auth->getRequerimientos();
                     break;
+                case 'guardarPuntaje':
+                    $datosArray = $_auth->postPuntaje($postBody);
+                    break;
                 default:
                     $datosArray = $_respuestas->error_405();
                     break;

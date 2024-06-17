@@ -1,0 +1,29 @@
+USE `tesis`;
+DROP procedure IF EXISTS `tesis`.`ASIGNAR_PUNTAJE`;
+;
+
+DELIMITER $$
+USE `tesis`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ASIGNAR_PUNTAJE`(IN p_id_persona int, 
+	IN p_id_juego int, 
+    IN p_puntaje VARCHAR(500),
+    OUT p_mensaje VARCHAR(100))
+BEGIN
+ DECLARE v_puntaje_juego INT;
+ select id_puntaje_juego into v_puntaje_juego from puntaje_juego where id_persona = p_id_persona and id_juego = p_id_juego;
+	IF v_puntaje_juego IS NOT NULL THEN
+		SET p_mensaje = 'usuario_jugado';
+	ELSE
+    INSERT INTO puntaje_juego (id_persona,id_juego,puntaje) VALUES (p_id_persona, p_id_juego, p_puntaje);
+		IF ROW_COUNT() = 0 THEN
+			SET p_mensaje = 'error_insert';
+		ELSE
+			SET p_mensaje = 'exito_insert';
+		END IF;
+	END IF;
+    SELECT p_mensaje;
+END$$
+
+DELIMITER ;
+;
+

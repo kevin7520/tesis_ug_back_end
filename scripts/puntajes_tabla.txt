@@ -1,0 +1,20 @@
+CREATE TABLE `tesis`.`puntaje_juego` (
+  `id_puntaje_juego` INT NOT NULL AUTO_INCREMENT,
+  `id_persona` INT NOT NULL,
+  `id_juego` INT NOT NULL,
+  `puntaje` VARCHAR(500) NOT NULL,
+  `estado` VARCHAR(1) NOT NULL DEFAULT 'A',
+  PRIMARY KEY (`id_puntaje_juego`),
+  INDEX `fk_id_persona_idx` (`id_persona` ASC),
+  INDEX `fk_id_juego_idx` (`id_juego` ASC),
+  CONSTRAINT `fk_id_persona`
+    FOREIGN KEY (`id_persona`)
+    REFERENCES `tesis`.`usuarios` (`idUsuario`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_id_juego`
+    FOREIGN KEY (`id_juego`)
+    REFERENCES `tesis`.`juegos` (`id_juego`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+);

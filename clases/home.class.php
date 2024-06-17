@@ -123,6 +123,44 @@ class home extends Conexion{
         }
     }
 
+    public function postPuntaje($json) {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        if(!isset($datos['id_persona']) || !isset($datos["id_juego"]) || !isset($datos["puntaje"])){
+            return $_respustas->error_400();
+        }
+        else {
+            $id_persona = $datos['id_persona'];
+            $id_juego = $datos['id_juego'];
+            $puntaje = $datos['puntaje'];
+
+            $datos = $this->crearPuntaje($id_persona,$id_juego,$puntaje);
+            if($datos){
+                $result = $_respustas->response;
+                $result["result"] = $datos[0]["mensaje"];
+                return $result;
+            }
+            else {
+                return $_respustas->error_200("La creación la puntación fue incorrecta");
+            }
+        }
+    }
+
+    private function crearPuntaje($id_persona,$id_juego,$puntaje) {
+        $consulta = "CALL ASIGNAR_PUNTAJE(?, ?, ?, @p_mensaje)";
+        $parametros = [
+            ':p_id_persona' => $id_persona,
+            ':p_id_juego' => $id_juego,
+            ':p_puntaje' => $puntaje
+        ];
+        $datos = parent::obtenerDatosRegistroPuntaje($consulta,$parametros);
+        if($datos[0]["mensaje"] != 0){
+            return $datos;
+        }else{
+            return 0;
+        }
+    }
+
     private function obtenerUsuarioRegistro($id_usuario, $usuario) {
         $query = "SELECT registroLogin, rol FROM usuarios WHERE idUsuario = '$id_usuario' AND usuario = '$usuario'";
         $datos = parent::obtenerDatos($query);
