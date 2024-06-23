@@ -95,6 +95,25 @@ class home extends Conexion{
             return $_respustas->error_200("not_game");
         }
     }
+    public function getJuegosProfesor($json) {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        if(!isset($datos['id'])){
+            return $_respustas->error_400();
+        }
+        else {
+            $id = $datos['id'];
+            $datos = $this->obtenerJuegoProfesor($id);
+            if($datos){
+                $result = $_respustas->response;
+                $result["result"] = $datos;
+                return $result;
+            }
+            else{
+                return $_respustas->error_200("not_game");
+            }
+        }  
+    }
 
     public function getRequerimientos(){ 
         $_respustas = new RespuestaGenerica;
@@ -274,6 +293,15 @@ class home extends Conexion{
 
     private function obtenerJuegoPublicos() {
         $query = "SELECT *FROM juegos WHERE juego_publico = 'S'";
+        $datos = parent::obtenerDatos($query);
+        if(isset($datos[0])){
+            return $datos;
+        } else {
+            return 0;
+        }
+    }
+    private function obtenerJuegoProfesor($id_profesor) {
+        $query = "SELECT *FROM juegos WHERE id_profesor = $id_profesor";
         $datos = parent::obtenerDatos($query);
         if(isset($datos[0])){
             return $datos;

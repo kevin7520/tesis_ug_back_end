@@ -35,6 +35,9 @@
                 case 'obtenerJuego':
                     $datosArray = $_auth->getJuego($postBody);
                     break;
+                case 'obtenerJuegosProfesor':
+                    $datosArray = $_auth->getJuegosProfesor($postBody);
+                    break;
                 case 'obtenerJuegoPublicos':
                     $datosArray = $_auth->getJuegosPublicos($postBody);
                     break;
