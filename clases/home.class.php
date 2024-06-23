@@ -30,6 +30,33 @@ class home extends Conexion{
         }
     }
 
+    public function getDatosUsuarios($json) {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        if(!isset($datos['idUsuario']) || !isset($datos["usuario"])){
+            return $_respustas->error_400();
+        }else{
+            $usuario = $datos['usuario'];
+            $idUsuario = $datos['idUsuario'];
+            $datos = $this->obtenerDatosUsuarios($idUsuario,$usuario);
+            if($datos){
+                $result = $_respustas->response;
+                $result["result"] = array(
+                    "usuario" => $datos["usuario"],
+                    "nombres" => $datos["nombres"],
+                    "apellidos" => $datos["apellidos"],
+                    "correo" => $datos["correo"],
+                    "rol" => $datos["rol"],
+                    "fechaNacimiento" => $datos["fechaNacimiento"],
+                );
+                return $result;
+            }
+            else{
+                return $_respustas->error_200("user_false");
+            }
+        }
+    }
+
     public function getJuego($json){
       
         $_respustas = new RespuestaGenerica;
@@ -146,6 +173,37 @@ class home extends Conexion{
         }
     }
 
+    public function postEditarUsuario($json) {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        if(!isset($datos['id_persona']) || !isset($datos["password"]) || !isset($datos["nombres"]) || !isset($datos["apellidos"]) || !isset($datos["fechaN"]) || !isset($datos["new_password"])){
+            return $_respustas->error_400();
+        }
+        else {
+            $id_persona = $datos['id_persona']; 
+            $password =  parent::encriptar($datos['password']); 
+            $nombres = $datos['nombres']; 
+            $apellidos = $datos['apellidos']; 
+            $fechaN = $datos['fechaN']; 
+            if(empty($datos['new_password'])) {
+                $new_password = $datos['new_password'];
+            }
+            else {
+                $new_password = parent::encriptar($datos['new_password']);
+            }
+
+            $datos = $this->editarPerfil($id_persona, $password, $nombres, $apellidos, $fechaN, $new_password);
+            if($datos){
+                $result = $_respustas->response;
+                $result["result"] = $datos[0]["mensaje"];
+                return $result;
+            }
+            else {
+                return $_respustas->error_200("La edición del usuaruo fue incorrecta. Intenlo más tarde");
+            }
+        }
+    }
+
     private function crearPuntaje($id_persona,$id_juego,$puntaje) {
         $consulta = "CALL ASIGNAR_PUNTAJE(?, ?, ?, @p_mensaje)";
         $parametros = [
@@ -153,7 +211,7 @@ class home extends Conexion{
             ':p_id_juego' => $id_juego,
             ':p_puntaje' => $puntaje
         ];
-        $datos = parent::obtenerDatosRegistroPuntaje($consulta,$parametros);
+        $datos = parent::obtenerDatosMensaje($consulta,$parametros);
         if($datos[0]["mensaje"] != 0){
             return $datos;
         }else{
@@ -171,9 +229,37 @@ class home extends Conexion{
         }
     }
 
+    private function obtenerDatosUsuarios($id_usuario, $usuario) {
+        $query = "SELECT usuario, nombres, apellidos, correo, rol, fechaNacimiento FROM usuarios WHERE idUsuario = '$id_usuario' AND usuario = '$usuario'";
+        $datos = parent::obtenerDatos($query);
+        if(isset($datos[0]["usuario"])){
+            return $datos[0];
+        } else {
+            return 0;
+        }
+    }
+
     private function crearJuego($id_usuario,$fecha_creacion,$fecha_finalizacion,$json,$privacidad){
         $query = "INSERT INTO juegos (id_profesor,fecha_creacion,fecha_finalizacion,json,juego_publico) VALUES ('$id_usuario', '$fecha_creacion', '$fecha_finalizacion','$json','$privacidad')";
         return parent::nonQueryId($query);
+    }
+
+    private function editarPerfil($id_persona, $password, $nombres, $apellidos, $fechaN, $new_password) {
+        $consulta = "CALL EDITAR_USUARIO(?, ?, ?, ?, ?, ?, @p_mensaje)";
+        $parametros = [
+            ':p_nombres' => $nombres,
+            ':p_id_usuario' => $id_persona,
+            ':p_fechaN' => $fechaN,
+            ':p_apellidos' => $apellidos,
+            ':p_password' => $password,
+            ':p_new_password' => $new_password
+        ];
+        $datos = parent::obtenerDatosMensaje($consulta,$parametros);
+        if($datos[0]["mensaje"] != 0){
+            return $datos;
+        }else{
+            return 0;
+        }
     }
 
     private function obtenerJuego($id_juego) {

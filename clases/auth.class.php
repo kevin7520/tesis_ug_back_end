@@ -60,7 +60,7 @@ class auth extends Conexion{
             $usuario = $datos['usuario'];
             $password = $datos['password'];
             $password = parent::encriptar($password);
-            $correo = $datos['password'];
+            $correo = $datos['correo'];
             $datos = $this->crearCuenta($usuario,$correo,$password);
             if($datos){
                 $result = $_respustas->response;

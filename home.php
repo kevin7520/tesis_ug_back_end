@@ -47,6 +47,12 @@
                 case 'guardarPuntaje':
                     $datosArray = $_auth->postPuntaje($postBody);
                     break;
+                case 'editarPerfil':
+                    $datosArray = $_auth->postEditarUsuario($postBody);
+                    break;
+                case 'obtenearDatosUsuarios':
+                    $datosArray = $_auth->getDatosUsuarios($postBody);
+                    break;
                 default:
                     $datosArray = $_respuestas->error_405();
                     break;

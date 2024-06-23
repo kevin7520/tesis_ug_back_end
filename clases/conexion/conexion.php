@@ -87,7 +87,7 @@
             return $this->convertirUTF8($resultArray);
         }
 
-        public function obtenerDatosRegistroPuntaje($sqlstr, $parametros){
+        public function obtenerDatosMensaje($sqlstr, $parametros){
             $stmt = $this->conexion->prepare($sqlstr);
             $tipos = '';
             $valores = [];
