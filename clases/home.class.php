@@ -172,15 +172,17 @@ class home extends Conexion{
     public function postPuntaje($json) {
         $_respustas = new RespuestaGenerica;
         $datos = json_decode($json,true);
-        if(!isset($datos['id_persona']) || !isset($datos["id_juego"]) || !isset($datos["puntaje"])){
+        if(!isset($datos['id_persona']) || !isset($datos["id_juego"]) || !isset($datos["puntaje"]) || !isset($datos["hora_inicio"]) || !isset($datos["hora_fin"])){
             return $_respustas->error_400();
         }
         else {
             $id_persona = $datos['id_persona'];
             $id_juego = $datos['id_juego'];
             $puntaje = $datos['puntaje'];
+            $hora_inicio = $datos['hora_inicio'];
+            $hora_fin = $datos['hora_fin'];
 
-            $datos = $this->crearPuntaje($id_persona,$id_juego,$puntaje);
+            $datos = $this->crearPuntaje($id_persona,$id_juego,$puntaje,$hora_inicio,$hora_fin);
             if($datos){
                 $result = $_respustas->response;
                 $result["result"] = $datos[0]["mensaje"];
@@ -223,12 +225,14 @@ class home extends Conexion{
         }
     }
 
-    private function crearPuntaje($id_persona,$id_juego,$puntaje) {
-        $consulta = "CALL ASIGNAR_PUNTAJE(?, ?, ?, @p_mensaje)";
+    private function crearPuntaje($id_persona,$id_juego,$puntaje,$hora_inicio,$hora_fin) {
+        $consulta = "CALL ASIGNAR_PUNTAJE(?, ?, ?, ?, ?, @p_mensaje)";
         $parametros = [
             ':p_id_persona' => $id_persona,
             ':p_id_juego' => $id_juego,
-            ':p_puntaje' => $puntaje
+            ':p_puntaje' => $puntaje,
+            ':p_hora_inicio' => $hora_inicio,
+            ':p_hora_fin' => $hora_fin
         ];
         $datos = parent::obtenerDatosMensaje($consulta,$parametros);
         if($datos[0]["mensaje"] != 0){
