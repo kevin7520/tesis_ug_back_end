@@ -19,3 +19,8 @@ ALTER TABLE juegos AUTO_INCREMENT = 1001;
 alter table juegos
   add juego_publico varchar(1);
 
+--- Cuartp
+
+
+alter table tesis.juegos
+  add id_tipo_juego int;

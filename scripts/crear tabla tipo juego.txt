@@ -1,0 +1,11 @@
+
+CREATE TABLE `tesis`.`tipo_juegos` (
+  `idTipo_juegos` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(100) NULL,
+  `estado` VARCHAR(45) NULL DEFAULT 'A',
+  PRIMARY KEY (`idTipo_juegos`));
+
+
+INSERT INTO `tesis`.`tipo_juegos` (`nombre`) VALUES ('Detectar requisitos No funcionales ambiguos y No ambiguos');
+INSERT INTO `tesis`.`tipo_juegos` (`nombre`) VALUES ('Detectar requisitos funcionales de los que no son funcionales');
+INSERT INTO `tesis`.`tipo_juegos` (`nombre`) VALUES ('Detectar requisitos funcionales ambiguos y no ambiguos');

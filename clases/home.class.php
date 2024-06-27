@@ -82,6 +82,28 @@ class home extends Conexion{
         }
     }
 
+    public function closeJuego($json) {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json,true);
+        if(!isset($datos['id_juego']) || !isset($datos['id_profesor'])){
+            return $_respustas->error_400();
+        }
+        else {
+            $id_juego = $datos['id_juego'];
+            $id_profesor = $datos['id_profesor'];
+            
+            $datos = $this->cerrarJuego($id_juego,$id_profesor);
+            if($datos){
+                $result = $_respustas->response;
+                $result["result"] = 'OK';
+                return $result;
+            }
+            else {
+                return $_respustas->error_200("La creación del juego no fue exitosa. Por favor, inténtelo nuevamente más tarde.");
+            }
+        }
+    }
+
     public function getJuegosPublicos($json) {
         $_respustas = new RespuestaGenerica;
         $datos = json_decode($json,true);
@@ -131,7 +153,7 @@ class home extends Conexion{
     public function postCreateJuego($json){
         $_respustas = new RespuestaGenerica;
         $datos = json_decode($json,true);
-        if(!isset($datos['id_profesor']) || !isset($datos["fechaCreacion"]) || !isset($datos["fechaFinilizacion"]) || !isset($datos["json"]) || !isset($datos["privacidad"])){
+        if(!isset($datos['id_profesor']) || !isset($datos["fechaCreacion"]) || !isset($datos["fechaFinilizacion"]) || !isset($datos["json"]) || !isset($datos["id_tipo_juego"])){
             return $_respustas->error_400();
         }
         else {
@@ -139,9 +161,9 @@ class home extends Conexion{
             $fecha_creacion = $datos['fechaCreacion'];
             $fecha_finalizacion = $datos['fechaFinilizacion'];
             $json_data = $datos['json'];
-            $privacidad = $datos['privacidad'];
+            $id_tipo_juego = $datos['id_tipo_juego'];
             
-            $datos = $this->crearJuego($usuario,$fecha_creacion,$fecha_finalizacion,$json_data,$privacidad);
+            $datos = $this->crearJuego($usuario,$fecha_creacion,$fecha_finalizacion,$json_data,$id_tipo_juego);
             if($datos){
                 $result = $_respustas->response;
                 $result["result"] = array(
@@ -262,9 +284,13 @@ class home extends Conexion{
         }
     }
 
-    private function crearJuego($id_usuario,$fecha_creacion,$fecha_finalizacion,$json,$privacidad){
-        $query = "INSERT INTO juegos (id_profesor,fecha_creacion,fecha_finalizacion,json,juego_publico) VALUES ('$id_usuario', '$fecha_creacion', '$fecha_finalizacion','$json','$privacidad')";
+    private function crearJuego($id_usuario,$fecha_creacion,$fecha_finalizacion,$json,$id_tipo_juego){
+        $query = "INSERT INTO juegos (id_profesor,fecha_creacion,fecha_finalizacion,json,id_tipo_juego) VALUES ('$id_usuario', '$fecha_creacion', '$fecha_finalizacion','$json',$id_tipo_juego)";
         return parent::nonQueryId($query);
+    }
+    private function cerrarJuego($id_juego,$id_profesor){
+        $query = "UPDATE juegos SET estado = 0 where id_profesor = $id_profesor and id_juego = $id_juego";
+        return parent::nonQuery($query);
     }
 
     private function editarPerfil($id_persona, $password, $nombres, $apellidos, $fechaN, $new_password) {

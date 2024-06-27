@@ -56,6 +56,9 @@
                 case 'obtenearDatosUsuarios':
                     $datosArray = $_auth->getDatosUsuarios($postBody);
                     break;
+                case 'cerrarJuego':
+                    $datosArray = $_auth->closeJuego($postBody);
+                    break;
                 default:
                     $datosArray = $_respuestas->error_405();
                     break;
