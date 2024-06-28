@@ -72,6 +72,8 @@ class home extends Conexion{
                 $result["result"] = array(
                     "fecha_creacion" => $datos["fecha_creacion"],
                     "fecha_finalizacion" => $datos["fecha_finalizacion"],
+                    "estado" => $datos["estado"],
+                    "id_tipo_juego" => $datos["id_tipo_juego"],
                     "json" => $datos["json"],
                 );
                 return $result;
