@@ -35,6 +35,9 @@ BEGIN
                     '{"nombres":"', u.nombres, '",',
                     '"apellidos":"', u.apellidos, '",',
                     '"puntaje":', p.puntaje, ',',
+                    '"aciertos":', p.aciertos, ',',
+                    '"errores":', p.errores, ',',
+                    '"id_juego":', p_id_juego, ',',
                     '"hora_inicio":"', p.hora_inicio, '",',
                     '"hora_fin":"', p.hora_fin, '"}'
                 )

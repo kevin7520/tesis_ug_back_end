@@ -62,6 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             case 'getDatosReporte':
                 $datosArray = $_auth->getDatosReporte($postBody);
                 break;
+            case 'getJuegosJugados':
+                $datosArray = $_auth->getJugadosJugados($postBody);
+                break;
             default:
                 $datosArray = $_respuestas->error_405();
                 break;

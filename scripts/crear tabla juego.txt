@@ -24,3 +24,9 @@ alter table juegos
 
 alter table tesis.juegos
   add id_tipo_juego int;
+
+  alter table tesis.juegos
+  add aciertos int;
+
+  alter table tesis.juegos
+  add errores int;

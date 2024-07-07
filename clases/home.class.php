@@ -67,21 +67,28 @@ class home extends Conexion
             return $_respustas->error_400();
         } else {
             $id = $datos['id'];
-            $datos = $this->obtenerJuego($id);
-            if ($datos) {
+            $idUsuario = $datos['idusuario'];
+            $datos1 = $this->verificarJuego($idUsuario, $id);
+            if ($datos1 == 0) {
+                $datos = $this->obtenerJuego($id);
+                if ($datos) {
 
-                $result = $_respustas->response;
-                $result["result"] = array(
-                    "fecha_creacion" => $datos["fecha_creacion"],
-                    "fecha_finalizacion" => $datos["fecha_finalizacion"],
-                    "estado" => $datos["estado"],
-                    "id_tipo_juego" => $datos["id_tipo_juego"],
-                    "json" => $datos["json"],
-                );
-                return $result;
+                    $result = $_respustas->response;
+                    $result["result"] = array(
+                        "fecha_creacion" => $datos["fecha_creacion"],
+                        "fecha_finalizacion" => $datos["fecha_finalizacion"],
+                        "estado" => $datos["estado"],
+                        "id_tipo_juego" => $datos["id_tipo_juego"],
+                        "json" => $datos["json"],
+                    );
+                    return $result;
+                } else {
+                    return $_respustas->error_200("not_game");
+                }
             } else {
-                return $_respustas->error_200("not_game");
+                return $_respustas->error_200("not_game_used");
             }
+
         }
     }
 
@@ -150,6 +157,19 @@ class home extends Conexion
             return $_respustas->error_200("not_requerimientos");
         }
     }
+    public function getJugadosJugados($json)
+    {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json, true);
+        $datos = $this->obternerJuegosJugados($datos['id']);
+        if ($datos) {
+            $result = $_respustas->response;
+            $result["result"] = $datos;
+            return $result;
+        } else {
+            return $_respustas->error_200("not_juegos");
+        }
+    }
 
     public function postCreateJuego($json)
     {
@@ -203,8 +223,10 @@ class home extends Conexion
             $puntaje = $datos['puntaje'];
             $hora_inicio = $datos['hora_inicio'];
             $hora_fin = $datos['hora_fin'];
+            $aciertos = $datos['aciertos'];
+            $errores = $datos['errores'];
 
-            $datos = $this->crearPuntaje($id_persona, $id_juego, $puntaje, $hora_inicio, $hora_fin);
+            $datos = $this->crearPuntaje($id_persona, $id_juego, $puntaje, $hora_inicio, $hora_fin, $aciertos, $errores);
             if ($datos) {
                 $result = $_respustas->response;
                 $result["result"] = $datos[0]["mensaje"];
@@ -267,13 +289,15 @@ class home extends Conexion
         }
     }
 
-    private function crearPuntaje($id_persona, $id_juego, $puntaje, $hora_inicio, $hora_fin)
+    private function crearPuntaje($id_persona, $id_juego, $puntaje, $hora_inicio, $hora_fin, $aciertos, $errores)
     {
-        $consulta = "CALL ASIGNAR_PUNTAJE(?, ?, ?, ?, ?, @p_mensaje)";
+        $consulta = "CALL ASIGNAR_PUNTAJE(?, ?, ?, ?, ?, ?, ?, @p_mensaje)";
         $parametros = [
             ':p_id_persona' => $id_persona,
             ':p_id_juego' => $id_juego,
             ':p_puntaje' => $puntaje,
+            ':p_aciertos' => $aciertos,
+            ':p_errores' => $errores,
             ':p_hora_inicio' => $hora_inicio,
             ':p_hora_fin' => $hora_fin
         ];
@@ -350,6 +374,17 @@ class home extends Conexion
         }
     }
 
+    private function verificarJuego($id, $id_juego)
+    {
+        $query = "SELECT *FROM puntaje_juego WHERE id_persona = $id and id_juego = $id_juego";
+        $datos = parent::obtenerDatos($query);
+        if (isset($datos[0])) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
     private function obtenerJuegoPublicos()
     {
         $query = "SELECT *FROM juegos WHERE juego_publico = 'S'";
@@ -391,6 +426,17 @@ class home extends Conexion
         ];
         $datos = parent::obtenerProcedimientoAlmacendao($consulta, $parametros);
         if ($datos[0]["mensaje"] != 0) {
+            return $datos;
+        } else {
+            return 0;
+        }
+    }
+
+    private function obternerJuegosJugados($id_usuario)
+    {
+        $query = "SELECT *FROM puntaje_juego WHERE id_persona = $id_usuario";
+        $datos = parent::obtenerDatos($query);
+        if (isset($datos[0])) {
             return $datos;
         } else {
             return 0;
