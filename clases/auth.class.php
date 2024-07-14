@@ -3,100 +3,105 @@ require_once 'conexion/conexion.php';
 require_once 'conexion/respuestaGenerica.php';
 
 
-class auth extends Conexion{
+class auth extends Conexion
+{
 
-    public function login($json){
-      
+    public function login($json)
+    {
+
         $_respustas = new RespuestaGenerica;
-        $datos = json_decode($json,true);
-        if(!isset($datos['usuario']) || !isset($datos["password"])){
+        $datos = json_decode($json, true);
+        if (!isset($datos['usuario']) || !isset($datos["password"])) {
             return $_respustas->error_400();
-        }else{
+        } else {
             $usuario = $datos['usuario'];
             $password = $datos['password'];
             $password = parent::encriptar($password);
             $datos = $this->obtenerDatosUsuario($usuario, $password);
-            if($datos){
-            //     //verificar si la contraseña es igual
-            //         if($password == $datos[0]['Password']){
-            //                 if($datos[0]['Estado'] == "Activo"){
-            //                     //crear el token
-                                 //$verificar  = $this->insertarToken($datos[0]['UsuarioId']);
-            //                     if($verificar){
-            //                             // si se guardo
-                                         $result = $_respustas->response;
-                                         $result["result"] = array(
-                                             "usuario" => $usuario,
-                                             "idUsuario" => $datos[0]['idUsuario'],
-                                             "migrado" => $datos[0]['mensaje']
-                                         );
-                                         return $result;
-            //                     }else{
-            //                             //error al guardar
-            //                             return $_respustas->error_500("Error interno, No hemos podido guardar");
-            //                     }
-            //                 }else{
-            //                     //el usuario esta inactivo
-            //                     return $_respustas->error_200("El usuario esta inactivo");
-            //                 }
-            //         }else{
-            //             //la contraseña no es igual
-            //             return $_respustas->error_200("El password es invalido");
-            //         }
-            }
-            else{
+            if ($datos) {
+                //     //verificar si la contraseña es igual
+                //         if($password == $datos[0]['Password']){
+                //                 if($datos[0]['Estado'] == "Activo"){
+                //                     //crear el token
+                //$verificar  = $this->insertarToken($datos[0]['UsuarioId']);
+                //                     if($verificar){
+                //                             // si se guardo
+                $result = $_respustas->response;
+                $result["result"] = array(
+                    "usuario" => $usuario,
+                    "idUsuario" => $datos[0]['idUsuario'],
+                    "migrado" => $datos[0]['mensaje']
+                );
+                return $result;
+                //                     }else{
+                //                             //error al guardar
+                //                             return $_respustas->error_500("Error interno, No hemos podido guardar");
+                //                     }
+                //                 }else{
+                //                     //el usuario esta inactivo
+                //                     return $_respustas->error_200("El usuario esta inactivo");
+                //                 }
+                //         }else{
+                //             //la contraseña no es igual
+                //             return $_respustas->error_200("El password es invalido");
+                //         }
+            } else {
                 return $_respustas->error_200("usuario_incorrecto");
             }
         }
     }
 
-    public function CreacionUsuario($json) {
+    public function CreacionUsuario($json)
+    {
         $_respustas = new RespuestaGenerica;
-        $datos = json_decode($json,true);
-        if(!isset($datos['usuario']) || !isset($datos["password"]) || !isset($datos["correo"])){
+        $datos = json_decode($json, true);
+        if (!isset($datos['usuario']) || !isset($datos["password"]) || !isset($datos["correo"])) {
             return $_respustas->error_400();
-        }
-        else {
+        } else {
             $usuario = $datos['usuario'];
             $password = $datos['password'];
             $password = parent::encriptar($password);
             $correo = $datos['correo'];
-            $datos = $this->crearCuenta($usuario,$correo,$password);
-            if($datos){
-                $result = $_respustas->response;
-                $result["result"] = array(
-                    "usuario" => $usuario
-                );
-                return $result;
+            if ($this->buscarUser($usuario) == 0) {
+                $datos = $this->crearCuenta($usuario, $correo, $password);
+                if ($datos) {
+                    $result = $_respustas->response;
+                    $result["result"] = array(
+                        "usuario" => $usuario
+                    );
+                    return $result;
+                } else {
+                    return $_respustas->error_200("La creación de la cuenta no fue exitosa. Por favor, inténtelo nuevamente más tarde.");
+                }
+            } else {
+                return $_respustas->error_200("user_ocupado");
             }
-            else {
-                return $_respustas->error_200("La creación de la cuenta no fue exitosa. Por favor, inténtelo nuevamente más tarde.");
-            }
+
+
         }
     }
 
-    public function migracionUsuario($json) {
+    public function migracionUsuario($json)
+    {
         $_respustas = new RespuestaGenerica;
-        $datos = json_decode($json,true);
-        if(!isset($datos['usuario']) || !isset($datos['nombre']) || !isset($datos["apellido"]) || !isset($datos["rol"]) || !isset($datos["fechaNacimiento"]) || !isset($datos["id"])){
+        $datos = json_decode($json, true);
+        if (!isset($datos['usuario']) || !isset($datos['nombre']) || !isset($datos["apellido"]) || !isset($datos["rol"]) || !isset($datos["fechaNacimiento"]) || !isset($datos["id"])) {
             return $_respustas->error_400();
-        }
-        else {
+        } else {
             $nombre = $datos['nombre'];
             $apellido = $datos['apellido'];
             $rol = $datos['rol'];
             $fechaNacimiento = $datos['fechaNacimiento'];
             $id = $datos['id'];
             $usuario = $datos['usuario'];
-            $datos = $this->migracionCuenta($nombre,$apellido,$rol,$fechaNacimiento,$id,$usuario);
-            if($datos){
+            $datos = $this->migracionCuenta($nombre, $apellido, $rol, $fechaNacimiento, $id, $usuario);
+            if ($datos) {
                 $result = $_respustas->response;
                 $result["result"] = array(
                     "proceso" => 'OK'
                 );
                 return $result;
-            }
-            else {
+            } else {
                 return $_respustas->error_200("La migración no fue exitosa. Por favor, inténtelo nuevamente más tarde.");
             }
         }
@@ -104,41 +109,55 @@ class auth extends Conexion{
 
 
 
-    private function obtenerDatosUsuario($usuario, $password){
+    private function obtenerDatosUsuario($usuario, $password)
+    {
         $consulta = "CALL LOGIN(?, ?, @p_idUsuario, @p_mensaje)";
         $parametros = [
             ':p_usuario' => $usuario,
             ':p_password' => $password
         ];
-        $datos = parent::obtenerDatosLogin($consulta,$parametros);
-        if($datos[0]["idUsuario"] != 0){
+        $datos = parent::obtenerDatosLogin($consulta, $parametros);
+        if ($datos[0]["idUsuario"] != 0) {
             return $datos;
-        }else{
+        } else {
             return 0;
         }
     }
 
-    private function crearCuenta($usuario, $correo, $password) {
+    private function crearCuenta($usuario, $correo, $password)
+    {
         $query = "INSERT INTO usuarios (usuario,correo,password) VALUES ('$usuario', '$correo', '$password')";
         return parent::nonQuery($query);
     }
+    private function buscarUser($usuario)
+    {
+        $query = "SELECT *from usuarios where usuario = '$usuario'";
+        $datos = parent::obtenerDatos($query);
+        if (isset($datos[0])) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
-    private function migracionCuenta($nombre, $apellido, $rol, $fechaNacimiento, $id, $usuario) {
+    private function migracionCuenta($nombre, $apellido, $rol, $fechaNacimiento, $id, $usuario)
+    {
         $query = "UPDATE usuarios set nombres = '$nombre', apellidos = '$apellido', rol = '$rol', fechaNacimiento = '$fechaNacimiento', alias = '$usuario' where idUsuario = $id";
         return parent::nonQuery($query);
     }
 
 
-    private function insertarToken($usuarioid){
+    private function insertarToken($usuarioid)
+    {
         $val = true;
-        $token = bin2hex(openssl_random_pseudo_bytes(16,$val));
+        $token = bin2hex(openssl_random_pseudo_bytes(16, $val));
         $date = date("Y-m-d H:i");
         $estado = "Activo";
         $query = "INSERT INTO usuarios_token (UsuarioId,Token,Estado,Fecha)VALUES('$usuarioid','$token','$estado','$date')";
         $verifica = parent::nonQuery($query);
-        if($verifica){
+        if ($verifica) {
             return $token;
-        }else{
+        } else {
             return 0;
         }
     }

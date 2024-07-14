@@ -18,3 +18,5 @@ CREATE TABLE `tesis`.`usuario` (
 ALTER TABLE `tesis`.`usuarios` 
 ADD COLUMN `rol` VARCHAR(2) NULL AFTER `alias`,
 ADD COLUMN `usuarioscol` VARCHAR(45) NULL AFTER `rol`;
+ALTER TABLE `tesis`.`usuarios` 
+ADD COLUMN `passwordRecuperar` VARCHAR(45) NULL AFTER `usuarioscol`;

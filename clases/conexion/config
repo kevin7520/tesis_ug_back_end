@@ -1,9 +1,9 @@
 {
-    "conexion": {
-        "server": "localhost",
-        "user": "root",
-        "password": "",
-        "database": "tesis",
-        "port": "3306"
-    }
+  "conexion": {
+    "server": "localhost",
+    "user": "root",
+    "password": "1234",
+    "database": "tesis",
+    "port": "3306"
+  }
 }
