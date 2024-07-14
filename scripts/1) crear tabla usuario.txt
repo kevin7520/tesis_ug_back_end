@@ -1,4 +1,4 @@
-CREATE TABLE `tesis`.`usuario` (
+CREATE TABLE `tesis`.`usuarios` (
   `idUsuario` INT NOT NULL AUTO_INCREMENT,
   `usuario` VARCHAR(50) NOT NULL,
   `nombres` VARCHAR(60) NULL,
