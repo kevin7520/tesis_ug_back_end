@@ -26,5 +26,5 @@ ALTER TABLE `tesis`.`puntaje_juego`
 ADD COLUMN `hora_inicio` VARCHAR(50) NULL AFTER `estado`,
 ADD COLUMN `hora_fin` VARCHAR(50) NULL AFTER `hora_inicio`;
 
-ADD COLUMN `aciertos` VARCHAR(50) NULL AFTER `hora_fin`,
-ADD COLUMN `errores` VARCHAR(50) NULL AFTER `aciertos`;
+ADD COLUMN `aciertos` INT NULL AFTER `hora_fin`,
+ADD COLUMN `errores` INT NULL AFTER `aciertos`;
