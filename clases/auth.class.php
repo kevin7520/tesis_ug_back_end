@@ -11,11 +11,10 @@ require 'PHPMailer/Exception.php';
 require 'PHPMailer/PHPMailer.php';
 require 'PHPMailer/SMTP.php';
 //Create an instance; passing `true` enables exceptions
-$mail = new PHPMailer(true);
+
 
 class auth extends Conexion
 {
-
     public function login($json)
     {
 
@@ -116,6 +115,59 @@ class auth extends Conexion
             }
         }
     }
+    public function recuperarPassword($json)
+    {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json, true);
+        if (!isset($datos['correo']) || !isset($datos['password']) || !isset($datos['password2'])) {
+            return $_respustas->error_400();
+        } else {
+            $correo = $datos['correo'];
+            $password = $datos['password'];
+            $password = parent::encriptar($password);
+            $password2 = $datos['password2'];
+            $datos = $this->passwordCambiar($correo, $password, $password2);
+            if ($datos) {
+                $result = $_respustas->response;
+                $result["result"] = array(
+                    "proceso" => 'OK'
+                );
+                return $result;
+            } else {
+                return $_respustas->error_200("La migración no fue exitosa. Por favor, inténtelo nuevamente más tarde.");
+            }
+        }
+    }
+
+    public function EnvioPassword($json)
+    {
+        $_respustas = new RespuestaGenerica;
+        $datos = json_decode($json, true);
+        if (!isset($datos['correo'])) {
+            return $_respustas->error_400();
+        } else {
+            //$usuario = $datos['correo'];
+            //$password = parent::encriptar($password);
+            $correo = $datos['correo'];
+            $id_envio = $this->enviarDatosEmail($correo);
+            if ($id_envio == 1) {
+                if ($datos) {
+                    $result = $_respustas->response;
+                    $result["result"] = "OK";
+                    return $result;
+                } else {
+                    return $_respustas->error_200("La creación de la cuenta no fue exitosa. Por favor, inténtelo nuevamente más tarde.");
+                }
+            } else {
+                if ($id_envio == 0)
+                    return $_respustas->error_200("correo_not");
+                else
+                    return $_respustas->error_200("correo_not_bd");
+            }
+
+
+        }
+    }
 
 
 
@@ -149,6 +201,16 @@ class auth extends Conexion
             return 0;
         }
     }
+    private function buscarEmail($correo)
+    {
+        $query = "SELECT *from usuarios where correo = '$correo'";
+        $datos = parent::obtenerDatos($query);
+        if (isset($datos[0])) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 
     private function migracionCuenta($nombre, $apellido, $rol, $fechaNacimiento, $id, $usuario)
     {
@@ -156,33 +218,87 @@ class auth extends Conexion
         return parent::nonQuery($query);
     }
 
-    // private function enviarDatosEmail($correo) {
-    //     try {
-    //         //Server settings
-    //         $mail->SMTPDebug = 0;                      //Enable verbose debug output
-    //         $mail->isSMTP();                                            //Send using SMTP
-    //         $mail->Host = 'smtp.gmail.com';                     //Set the SMTP server to send through
-    //         $mail->SMTPAuth = true;                                   //Enable SMTP authentication
-    //         $mail->Username = 'serious.game.ug@gmail.com';                     //SMTP username
-    //         $mail->Password = 'dkvakqmywddzgjnb';                               //SMTP password
-    //         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
-    //         $mail->Port = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+    private function passwordTemporal($correo, $password)
+    {
+        $query = "UPDATE usuarios set passwordRecuperar = '$password' where correo = '$correo'";
+        return parent::nonQuery($query);
+    }
 
-    //         //Recipients
-    //         $mail->setFrom('serious.game.ug@gmail.com', 'ADMINISTRADOR');
-    //         $mail->addAddress('kaas7520@gmail.com');     //Add a recipient
-    //         //Content
-    //         $mail->isHTML(true);                                  //Set email format to HTML
-    //         $mail->Subject = 'Restablecer contraseña';
-    //         $mail->Body = 'This is the HTML message body <b>in bold!</b>';
-    //         $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+    private function passwordCambiar($correo, $password, $password2)
+    {
+        $query = "UPDATE usuarios set password = '$password', passwordRecuperar = '' where correo = '$correo' and passwordRecuperar = '$password2'";
+        return parent::nonQuery($query);
+    }
 
-    //         $mail->send();
-    //         echo 'Message has been sent';
-    //     } catch (Exception $e) {
-    //         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-    //     }
-    // }
+
+    private function enviarDatosEmail($correo)
+    {
+        if ($this->buscarEmail($correo) == 1) {
+            $mail = new PHPMailer(true);
+            try {
+                $password = $this->generar_contrasena_temporal();
+                //Server settings
+                $mail->SMTPDebug = 0;                      //Enable verbose debug output
+                $mail->isSMTP();                                            //Send using SMTP
+                $mail->Host = 'smtp.gmail.com';                     //Set the SMTP server to send through
+                $mail->SMTPAuth = true;                                   //Enable SMTP authentication
+                $mail->Username = 'serious.game.ug@gmail.com';                     //SMTP username
+                $mail->Password = 'dkvakqmywddzgjnb';                               //SMTP password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable implicit TLS encryption
+                $mail->Port = 587;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+                //Recipients
+                $mail->setFrom('serious.game.ug@gmail.com', 'ADMINISTRADOR');
+                $mail->addAddress($correo);     //Add a recipient
+                //Content
+                $mail->isHTML(true);                                  //Set email format to HTML
+                $mail->Subject = 'Restablecer contraseña';
+                $mail->Body = '
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Recuperación de Contraseña Temporal</title>
+        </head>
+        <body>
+            <p>Hola ' . htmlspecialchars($correo) . ',</p>
+
+            <p>Hemos recibido una solicitud para restablecer la contraseña de tu cuenta. Para garantizar la seguridad de tu cuenta, hemos generado una contraseña temporal para ti. A continuación encontrarás los detalles:</p>
+
+            <p><strong>Contraseña Temporal:</strong> ' . htmlspecialchars($password) . '</p>
+
+            <p>Si no solicitaste este cambio de contraseña, por favor, contacta con nuestro equipo de soporte inmediatamente para asegurar la seguridad de tu cuenta.</p>
+
+            <p>Gracias por confiar en nosotros.</p>
+        </body>
+        </html>';
+                $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+                $mail->send();
+                $temp = $this->passwordTemporal($correo, $password);
+                return 1;
+            } catch (Exception $e) {
+                return 0;
+            }
+        } else {
+            return 9;
+        }
+
+    }
+
+    function generar_contrasena_temporal($longitud = 8)
+    {
+        $caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=<>?';
+        $contrasena = '';
+        $max_index = strlen($caracteres) - 1;
+
+        for ($i = 0; $i < $longitud; $i++) {
+            $contrasena .= $caracteres[random_int(0, $max_index)];
+        }
+
+        return $contrasena;
+    }
 
 
     private function insertarToken($usuarioid)
