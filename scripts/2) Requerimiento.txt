@@ -66,4 +66,11 @@ VALUES
 'Ejemplo Retro Alimentacion',
 1); 
 
+
+--- Quitno 
+
+ALTER TABLE `tesis`.`requerimientos` 
+CHANGE COLUMN `titulo` `titulo` VARCHAR(1000) NOT NULL ,
+CHANGE COLUMN `retroalimentacion` `retroalimentacion` VARCHAR(1000) NULL DEFAULT NULL ;
+
 ///El uno  representa el Id del requerimiento de la tabla que creamos para ver el tipo de requerimiento
