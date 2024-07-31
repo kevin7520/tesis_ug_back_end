@@ -1,12 +1,12 @@
-USE `tesis`;
+USE `2024_C1_Grupo3_2024`;
 DROP procedure IF EXISTS `EDITAR_USUARIO`;
 
-USE `tesis`;
-DROP procedure IF EXISTS `tesis`.`EDITAR_USUARIO`;
+USE `2024_C1_Grupo3_2024`;
+DROP procedure IF EXISTS `2024_C1_Grupo3_2024`.`EDITAR_USUARIO`;
 ;
 
 DELIMITER $$
-USE `tesis`$$
+USE `2024_C1_Grupo3_2024`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `EDITAR_USUARIO`(IN p_nombres VARCHAR(60),
 	IN p_id_usuario int, 
     IN p_fechaN VARCHAR(45),

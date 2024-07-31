@@ -1,4 +1,4 @@
-CREATE TABLE `tesis`.`puntaje_juego` (
+CREATE TABLE `2024_C1_Grupo3_2024`.`puntaje_juego` (
   `id_puntaje_juego` INT NOT NULL AUTO_INCREMENT,
   `id_persona` INT NOT NULL,
   `id_juego` INT NOT NULL,
@@ -9,22 +9,19 @@ CREATE TABLE `tesis`.`puntaje_juego` (
   INDEX `fk_id_juego_idx` (`id_juego` ASC),
   CONSTRAINT `fk_id_persona`
     FOREIGN KEY (`id_persona`)
-    REFERENCES `tesis`.`usuarios` (`idUsuario`)
+    REFERENCES `2024_C1_Grupo3_2024`.`usuarios` (`idUsuario`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `fk_id_juego`
     FOREIGN KEY (`id_juego`)
-    REFERENCES `tesis`.`juegos` (`id_juego`)
+    REFERENCES `2024_C1_Grupo3_2024`.`juegos` (`id_juego`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 );
 
-
-/////////// Segundo
-
-ALTER TABLE `tesis`.`puntaje_juego` 
+ALTER TABLE `2024_C1_Grupo3_2024`.`puntaje_juego` 
 ADD COLUMN `hora_inicio` VARCHAR(50) NULL AFTER `estado`,
-ADD COLUMN `hora_fin` VARCHAR(50) NULL AFTER `hora_inicio`;
+ADD COLUMN `hora_fin` VARCHAR(50) NULL AFTER `hora_inicio`,
 
 ADD COLUMN `aciertos` INT NULL AFTER `hora_fin`,
 ADD COLUMN `errores` INT NULL AFTER `aciertos`;

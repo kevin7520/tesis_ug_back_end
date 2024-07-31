@@ -1,4 +1,4 @@
-CREATE TABLE `tesis`.`usuarios` (
+CREATE TABLE `2024_C1_Grupo3_2024`.`usuarios` (
   `idUsuario` INT NOT NULL AUTO_INCREMENT,
   `usuario` VARCHAR(50) NOT NULL,
   `nombres` VARCHAR(60) NULL,
@@ -15,8 +15,11 @@ CREATE TABLE `tesis`.`usuarios` (
 
 
 
-ALTER TABLE `tesis`.`usuarios` 
+ALTER TABLE `2024_C1_Grupo3_2024`.`usuarios` 
 ADD COLUMN `rol` VARCHAR(2) NULL AFTER `alias`,
 ADD COLUMN `usuarioscol` VARCHAR(45) NULL AFTER `rol`;
-ALTER TABLE `tesis`.`usuarios` 
+ALTER TABLE `2024_C1_Grupo3_2024`.`usuarios` 
 ADD COLUMN `passwordRecuperar` VARCHAR(45) NULL AFTER `usuarioscol`;
+ALTER TABLE `2024_C1_Grupo3_2024`.`usuarios` 
+CHANGE COLUMN `usuarioscol` `token` VARCHAR(500) NULL DEFAULT NULL ;
+

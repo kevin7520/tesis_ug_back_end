@@ -1,46 +1,41 @@
---Primero
-CREATE TABLE `tesis`.`tipo_requerimiento` (
+CREATE TABLE `2024_C1_Grupo3_2024`.`tipo_requerimiento` (
   `id_tipo_requerimiento` INT NOT NULL AUTO_INCREMENT,
   `nombre_tipo` VARCHAR(45) NOT NULL,
   `codigo` VARCHAR(3) NOT NULL,
   PRIMARY KEY (`id_tipo_requerimiento`));
 
-  ---Segundo
-
-  INSERT INTO `tesis`.`tipo_requerimiento`
+  INSERT INTO `2024_C1_Grupo3_2024`.`tipo_requerimiento`
 (`nombre_tipo`, `codigo`)
 VALUES
 ("No Funcional Ambiguo", "NFA");
 
-INSERT INTO `tesis`.`tipo_requerimiento`
+INSERT INTO `2024_C1_Grupo3_2024`.`tipo_requerimiento`
 (`nombre_tipo`, `codigo`)
 VALUES
 ("No Funcional no Ambiguo", "NFN");
 
-INSERT INTO `tesis`.`tipo_requerimiento`
+INSERT INTO `2024_C1_Grupo3_2024`.`tipo_requerimiento`
 (`nombre_tipo`, `codigo`)
 VALUES
 ("Funcional Ambiguo", "FA");
 
-INSERT INTO `tesis`.`tipo_requerimiento`
+INSERT INTO `2024_C1_Grupo3_2024`.`tipo_requerimiento`
 (`nombre_tipo`, `codigo`)
 VALUES
 ("Funcional no Ambiguo", "FN");
 
-INSERT INTO `tesis`.`tipo_requerimiento`
+INSERT INTO `2024_C1_Grupo3_2024`.`tipo_requerimiento`
 (`nombre_tipo`, `codigo`)
 VALUES
 ("Funcional", "RF");
 
-INSERT INTO `tesis`.`tipo_requerimiento`
+INSERT INTO `2024_C1_Grupo3_2024`.`tipo_requerimiento`
 (`nombre_tipo`, `codigo`)
 VALUES
 ("No Funcional", "RNF");
 
 
----Tercero
-
-CREATE TABLE `tesis`.`requerimientos` (
+CREATE TABLE `2024_C1_Grupo3_2024`.`requerimientos` (
   `id_requerimientos` INT NOT NULL AUTO_INCREMENT,
   `titulo` VARCHAR(45) NOT NULL,
   `retroalimentacion` VARCHAR(500) NULL,
@@ -50,14 +45,12 @@ CREATE TABLE `tesis`.`requerimientos` (
   INDEX `pk_id_requerimiento_idx` (`tipo_requerimiento` ASC),
   CONSTRAINT `fk_id_requerimiento`
     FOREIGN KEY (`tipo_requerimiento`)
-    REFERENCES `tesis`.`tipo_requerimiento` (`id_tipo_requerimiento`)
+    REFERENCES `2024_C1_Grupo3_2024`.`tipo_requerimiento` (`id_tipo_requerimiento`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
 );
 
----Cuarto
-
-  INSERT INTO `tesis`.`requerimientos`
+  INSERT INTO `2024_C1_Grupo3_2024`.`requerimientos`
 (`titulo`,
 `retroalimentacion`,
 `tipo_requerimiento`)
@@ -66,11 +59,6 @@ VALUES
 'Ejemplo Retro Alimentacion',
 1); 
 
-
---- Quitno 
-
-ALTER TABLE `tesis`.`requerimientos` 
+ALTER TABLE `2024_C1_Grupo3_2024`.`requerimientos` 
 CHANGE COLUMN `titulo` `titulo` VARCHAR(1000) NOT NULL ,
 CHANGE COLUMN `retroalimentacion` `retroalimentacion` VARCHAR(1000) NULL DEFAULT NULL ;
-
-///El uno  representa el Id del requerimiento de la tabla que creamos para ver el tipo de requerimiento

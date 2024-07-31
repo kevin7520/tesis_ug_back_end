@@ -1,7 +1,7 @@
 
-use tesis; 
---- Primero ejecuta esto
-CREATE TABLE `tesis`.`juegos` (
+use 2024_C1_Grupo3_2024; 
+
+CREATE TABLE `2024_C1_Grupo3_2024`.`juegos` (
   `id_juego` INT NOT NULL AUTO_INCREMENT,
   `id_profesor` INT NOT NULL,
   `fecha_creacion` DATETIME NOT NULL,
@@ -10,23 +10,17 @@ CREATE TABLE `tesis`.`juegos` (
   `json` JSON NOT NULL,
   PRIMARY KEY (`id_juego`));
 
---- Segundo ejecuta esto
-use tesis; 
+use 2024_C1_Grupo3_2024; 
 ALTER TABLE juegos AUTO_INCREMENT = 1001;
-
---- Terceo ejecuta esto
 
 alter table juegos
   add juego_publico varchar(1);
 
---- Cuartp
-
-
-alter table tesis.juegos
+alter table 2024_C1_Grupo3_2024.juegos
   add id_tipo_juego int;
 
-  alter table tesis.juegos
+  alter table 2024_C1_Grupo3_2024.juegos
   add aciertos int;
 
-  alter table tesis.juegos
+  alter table 2024_C1_Grupo3_2024.juegos
   add errores int;
