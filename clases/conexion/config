@@ -1,9 +1,0 @@
-{
-  "conexion": {
-    "server": "localhost",
-    "user": "root",
-    "password": "1234",
-    "database": "2024_C1_Grupo3_2024",
-    "port": "3306"
-  }
-}

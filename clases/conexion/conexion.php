@@ -18,14 +18,11 @@ class Conexion
 
     function __construct()
     {
-        $listaDatos = $this->datosConexion();
-        foreach ($listaDatos as $key => $value) {
-            $this->server = $value['server'];
-            $this->user = $value['user'];
-            $this->password = $value['password'];
-            $this->database = $value['database'];
-            $this->port = $value['port'];
-        }
+        $this->server = "localhost";
+        $this->user = "root";
+        $this->password = "1234";
+        $this->database = "2024_C1_Grupo3_2024";
+        $this->port = "3306";
 
         $this->conexion = new mysqli($this->server, $this->user, $this->password, $this->database, $this->port);
         if ($this->conexion->connect_errno) {
