@@ -1,7 +1,7 @@
 
-use 2024_C1_Grupo3_2024; 
+use dbs13174080; 
 
-CREATE TABLE `2024_C1_Grupo3_2024`.`juegos` (
+CREATE TABLE `dbs13174080`.`juegos` (
   `id_juego` INT NOT NULL AUTO_INCREMENT,
   `id_profesor` INT NOT NULL,
   `fecha_creacion` DATETIME NOT NULL,
@@ -10,17 +10,17 @@ CREATE TABLE `2024_C1_Grupo3_2024`.`juegos` (
   `json` JSON NOT NULL,
   PRIMARY KEY (`id_juego`));
 
-use 2024_C1_Grupo3_2024; 
+use dbs13174080; 
 ALTER TABLE juegos AUTO_INCREMENT = 1001;
 
 alter table juegos
   add juego_publico varchar(1);
 
-alter table 2024_C1_Grupo3_2024.juegos
+alter table dbs13174080.juegos
   add id_tipo_juego int;
 
-  alter table 2024_C1_Grupo3_2024.juegos
+  alter table dbs13174080.juegos
   add aciertos int;
 
-  alter table 2024_C1_Grupo3_2024.juegos
+  alter table dbs13174080.juegos
   add errores int;

@@ -18,10 +18,10 @@ class Conexion
 
     function __construct()
     {
-        $this->server = "localhost";
-        $this->user = "root";
-        $this->password = "1234";
-        $this->database = "2024_C1_Grupo3_2024";
+        $this->server = "db5016185917.hosting-data.io";
+        $this->user = "dbu5624161";
+        $this->password = "1234emelec";
+        $this->database = "dbs13174080";
         $this->port = "3306";
 
         $this->conexion = new mysqli($this->server, $this->user, $this->password, $this->database, $this->port);
